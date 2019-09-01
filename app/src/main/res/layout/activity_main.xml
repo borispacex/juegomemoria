@@ -31,11 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="INICIAR"/>
-        <Button
-            android:id="@+id/Tiempo"
+        <TextView
+            android:id="@+id/crono"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textSize="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:00"/>
+            android:text="00:00:00" />
         <Button
             android:id="@+id/Reiniciar"
             android:layout_width="wrap_content"
@@ -158,14 +161,14 @@
             android:id="@+id/estado"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Correcto"
+            android:text=""
             android:gravity="center"/>
 
         <TextView
             android:id="@+id/textoPuntuacion"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Felicides"
+            android:text="Puntuacion: 0"
             android:gravity="center"/>
     </LinearLayout>
 

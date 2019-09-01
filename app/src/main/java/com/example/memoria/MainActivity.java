@@ -3,13 +3,14 @@ package com.example.memoria;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Message;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int indice = 0;
     private int imagenes[];
-    //imagen de fondo;
+    // imagen de fondo;
     private int fondo;
 
 
@@ -29,39 +30,56 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton [] botonera = new ImageButton[12];
     private Button reiniciar, iniciar, tiempo, salir;
 
-    //para barajar
-    //el vector que recoge el resultado del "barajamiento" (o "barajación" o "barajancia" o como leshes se diga)
+    // para barajar
+    // el vector que recoge el resultado del "barajamiento" (o "barajación" o "barajancia" o como leshes se diga)
     ArrayList<Integer> arrayBarajado;
 
-    //COMPARACIÓN
-    //los botones que se han pulsado y se comparan
+    // COMPARACIÓN
+    // los botones que se han pulsado y se comparan
     ImageButton primero;
-    //posiciones de las imágenes a comparar en el vector de imágenes
+    // posiciones de las imágenes a comparar en el vector de imágenes
     int numeroPrimero, numeroSegundo;
-    //durante un segundo se bloquea el juego y no se puede pulsar ningún botón
+    // durante un segundo se bloquea el juego y no se puede pulsar ningún botón
     boolean bloqueo = false;
 
     // para controlar la pausa de un segundo
     final Handler handler = new Handler();
 
-    //finalmente, el número de aciertos y la puntuación
+    // finalmente, el número de aciertos y la puntuación
     int aciertos=0;
     int puntuacion=0;
     TextView textoPuntuacion;
 
+    // CRONOMETRO
+    TextView l_cronometro;
+    MiHandler miHandler;
+    String salida;
+    int min, seg, micros;
+    boolean pausado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cargarImagenes();
+        cargarBotones();
         botonesMenu();
         reiniciar.setEnabled(false);
+
+        miHandler = new MiHandler( this );
+        l_cronometro = findViewById(R.id.crono);
+        //inicializo las variables
+        min=0;seg=0;micros =0;
+        pausado=false;
+        // MOSTRAMOS FONDO
+        for (int i = 0; i < botonera.length; i++) {
+            botonera[i].setScaleType(ImageView.ScaleType.CENTER_CROP);
+            botonera[i].setImageResource(fondo);
+        }
 
     }
     public void iniciar(){
         arrayBarajado = barajar(imagenes.length*2);
-        cargarBotones();
 
         //MOSTRAMOS LA IMAGEN
         for(int i=0; i<botonera.length; i++) {
@@ -160,13 +178,20 @@ public class MainActivity extends AppCompatActivity {
                         //reiniciamos la variables auxiliaares
                         primero = null;
                         bloqueo = false;
-                        //restamos uno a la puntuación
+                        // restamos uno a la puntuación
+                        /*
                         if (puntuacion > 0) {
                             puntuacion--;
                             textoPuntuacion.setText("Puntuación: " + puntuacion);
                         }
+                        */
+
                     }
                 }, 1000);//al cabo de un segundo
+            }
+            // cuando llega a puntuacion maxima
+            if (puntuacion == 6 ) {
+                pausado=true;
             }
         }
 
@@ -216,26 +241,140 @@ public class MainActivity extends AppCompatActivity {
     public void botonesMenu(){
         reiniciar = (Button) findViewById(R.id.Reiniciar);
         iniciar = (Button) findViewById(R.id.Iniciar);
-        tiempo = (Button) findViewById(R.id.Tiempo);
 
+        reiniciar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iniciar.setEnabled(true);
+                reiniciar.setEnabled(false);
+                pausado=true;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < botonera.length; i++) {
+                            botonera[i].setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            botonera[i].setImageResource(fondo);
+                        }
+                        min=0;seg=0;micros=0;
+                        l_cronometro.setText("00:00:00");
+                    }
+                }, 500);
+            }
+        });
         iniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 iniciar();
+
                 iniciar.setEnabled(false);
                 reiniciar.setEnabled(true);
-            }
-        });
-        reiniciar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // iniciar();
-                iniciar.setEnabled(true);
-                reiniciar.setEnabled(false);
 
+                if(pausado) {
+                    synchronized (this) {
+                        min=0;seg=0;micros =0;
+                        l_cronometro.setText("00:00:00");
+                        pausado = false;
+                        cronopost();
+                        this.notifyAll();
+                    }
+                }
+                else{
+                    cronopost();
+
+                }
             }
         });
+    }
+    // CRONOMETRO
+    public void cronopost(){
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (pausado) {
+                        synchronized (this) {
+                            try {
+                                this.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    espera(10);
+
+                    if (!pausado) {
+                        Message msg = new Message();
+                        msg.what=1;
+                        miHandler.sendMessage(msg);
+
+                    }
+                }
+            }
+        });
+        th.start();
 
     }
+    public void crono(){
+        micros++;
+        if(micros == 100){
+            seg++;
+            micros =0;
+        }
+        if (seg == 60) {
+            min++;
+            seg = 0;
+        }
+    }
+    public String formato(){
+        salida="";
+        if (min <= 9) {
+            salida += "0";
+        }
+        salida += min;
+        salida += ":";
+        if (seg <= 9) {
+            salida += "0";
+        }
+        salida += seg + ":" ;
+        if(micros<=9){
+            salida+="0";
+        }
+        salida+=micros;
+
+        return salida;
+
+    }
+
+    static public void espera(int e) {
+        try {
+            Thread.sleep(e);
+        } catch (InterruptedException ex) {
+        }
+    }
+
+
+    static class MiHandler extends Handler {
+        MainActivity ma;
+
+        MiHandler(MainActivity ma ){
+            this.ma = ma;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch( msg.what){
+                case 1:
+                    ma.crono();
+                    //Formato de la salida:
+                    String salida = ma.formato();
+                    ma.l_cronometro.setText(salida);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 
 }
