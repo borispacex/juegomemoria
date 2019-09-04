@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="5dp">
 
         <ImageButton
             android:id="@+id/boton00"
@@ -60,8 +60,8 @@
             android:src="@drawable/naipe"/>
         <ImageButton
             android:id="@+id/boton01"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/naipe"/>
@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="5dp">
 
         <ImageButton
             android:id="@+id/boton03"
@@ -87,8 +87,8 @@
             android:src="@drawable/naipe"/>
         <ImageButton
             android:id="@+id/boton04"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/naipe"/>
@@ -104,7 +104,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="5dp">
 
         <ImageButton
             android:id="@+id/boton06"
@@ -113,8 +113,8 @@
             android:src="@drawable/naipe"/>
         <ImageButton
             android:id="@+id/boton07"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/naipe"/>
@@ -130,7 +130,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="5dp">
 
         <ImageButton
             android:id="@+id/boton09"
@@ -139,8 +139,8 @@
             android:src="@drawable/naipe"/>
         <ImageButton
             android:id="@+id/boton10"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/naipe"/>
